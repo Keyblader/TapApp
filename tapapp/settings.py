@@ -108,7 +108,7 @@ STATICFILES_DIRS = (
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (Fotos de usuarios, tapas y bares)
 
