@@ -18,6 +18,7 @@ def anyadirBar(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
 def anyadirTapa(request):
     
     """
@@ -31,7 +32,8 @@ def anyadirTapa(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
+    
+@api_view(['POST'])
 def anyadirComentario(request):
     
     """
@@ -46,6 +48,7 @@ def anyadirComentario(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
    
    
+@api_view(['POST'])  
 def anyadirFoto(request):
     
     """
@@ -59,7 +62,8 @@ def anyadirFoto(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
- 
+
+@api_view(['POST']) 
 def anyadirValoracion(request):
     
     """
