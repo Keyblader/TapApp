@@ -2,6 +2,34 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerializer, FotoSerializer, ValoracionSerializer
+from tapas.models import Tapa, Bar
+from rest_framework.views import APIView
+from django.http import Http404
+
+# TODO: Solo mostrar lo que esten a una determinada distancia 
+class TapasList(APIView):
+    
+    """
+    Muestra un listado de las tapas ordenado por su puntuacion media.
+    """
+    
+    def get(self, request):
+        tapas = Tapa.objects.all().order_by('-puntuacionMedia')
+        serializer = TapaSerializer(tapas, many=True)
+        return Response(serializer.data)
+
+
+class TapasListBar(APIView):
+    
+    """
+    Muestra un listado de las tapas de un determinado bar.
+    """
+    
+    def get(self, request, id_bar):
+        tapas = Tapa.objects.filter(bar=id_bar)
+        serializer = TapaSerializer(tapas, many=True)
+        return Response(serializer.data)
+
 
 @api_view(['POST'])
 def anyadirBar(request):
@@ -75,4 +103,40 @@ def anyadirValoracion(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)           
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class TapaDetail(APIView):
+    
+    """
+    Muestra los detalles de una tapa.
+    """
+    
+    def get_object(self, id_tapa):
+        try:
+            return Tapa.objects.get(pk=id_tapa)
+        except Tapa.DoesNotExist:
+            raise Http404
+
+    def get(self, request, id_tapa):
+        tapas = self.get_object(id_tapa)
+        serializer = TapaSerializer(tapas)
+        return Response(serializer.data)
+    
+              
+class BarDetail(APIView):
+    
+    """
+    Devuelve una lista de los bares.
+    """
+    
+    def get_object(self, id_bar):
+        try:
+            return Bar.objects.get(pk=id_bar)
+        except Bar.DoesNotExist:
+            raise Http404
+
+    def get(self, request, id_bar):
+        bares = self.get_object(id_bar)
+        serializer = BarSerializer(bares)
+        return Response(serializer.data)              

@@ -2,6 +2,7 @@ from django.db import models
 from usuarios.models import Usuario
 import os
 
+# TODO: Revisar cuando el id es un numerico auto-generado.
 
 def get_image_path_bar(instance, filename):
     return os.path.join('bares', str(instance.nombre), filename)
@@ -27,7 +28,7 @@ class Bar(models.Model):
     class Meta:
         verbose_name_plural = 'Bares'  
         
-    nombre = models.CharField(max_length = 100, primary_key=True)
+    nombre = models.CharField(max_length = 100)
     descripcion = models.TextField(null = True, blank = True)
     longitud = models.CharField(max_length = 50)
     latitud = models.CharField(max_length = 50)
