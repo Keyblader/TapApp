@@ -1,5 +1,5 @@
 from django.db import models
-from usuarios.models import Usuario
+from django.contrib.auth.models import User 
 import os
 
 # TODO: Revisar cuando el id es un numerico auto-generado.
@@ -34,7 +34,7 @@ class Bar(models.Model):
     latitud = models.CharField(max_length = 50)
     imagen = models.ImageField(upload_to=get_image_path_bar, default='bar.jpg')
     fechaSubida = models.DateTimeField(auto_now=True)  
-    usuarioRegistro = models.ForeignKey(Usuario)
+    usuarioRegistro = models.ForeignKey(User)
     
     def __unicode__(self):
         return self.nombre
@@ -55,8 +55,8 @@ class Tapa(models.Model):
     puntuacionMedia = models.FloatField(default=0)
     fechaSubida = models.DateTimeField(auto_now=True)    
     bar = models.ForeignKey(Bar)
-    usuarioRegistro = models.ForeignKey(Usuario, related_name = 'registrador')
-    favoritos = models.ManyToManyField(Usuario, related_name = 'favorito', blank = True)
+    usuarioRegistro = models.ForeignKey(User, related_name = 'registrador')
+    favoritos = models.ManyToManyField(User, related_name = 'favorito', blank = True)
     
     def __unicode__(self):
         return self.nombre
@@ -71,7 +71,7 @@ class Comentario(models.Model):
     descripcion = models.TextField()    
     fechaSubida = models.DateTimeField(auto_now=True)
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(Usuario)
+    usuario = models.ForeignKey(User)
     
     
 class Valoracion(models.Model):
@@ -85,7 +85,7 @@ class Valoracion(models.Model):
         
     puntuacion = models.IntegerField()
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(Usuario)
+    usuario = models.ForeignKey(User)
             
                 
 class Foto(models.Model):
@@ -97,4 +97,4 @@ class Foto(models.Model):
     imagen = models.ImageField(upload_to=get_image_path_tapa_added)
     fechaSubida = models.DateTimeField(auto_now=True)
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(Usuario)  
+    usuario = models.ForeignKey(User)  
