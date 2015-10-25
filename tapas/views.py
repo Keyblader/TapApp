@@ -1,4 +1,6 @@
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerializer, FotoSerializer, ValoracionSerializer
@@ -12,6 +14,9 @@ class TapasList(APIView):
     """
     Muestra un listado de las tapas ordenado por su puntuacion media.
     """
+    
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def get(self, request):
         tapas = Tapa.objects.all().order_by('-puntuacionMedia')
