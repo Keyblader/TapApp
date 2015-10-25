@@ -5,6 +5,8 @@ from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerialize
 from tapas.models import Tapa, Bar
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # TODO: Solo mostrar lo que esten a una determinada distancia 
 class TapasList(APIView):
@@ -13,10 +15,20 @@ class TapasList(APIView):
     Muestra un listado de las tapas ordenado por su puntuacion media.
     """
     
+    #authentication_classes = (SessionAuthentication, BasicAuthentication)
+    #permission_classes = (IsAuthenticated,)
+    
     def get(self, request):
+        
         tapas = Tapa.objects.all().order_by('-puntuacionMedia')
-        serializer = TapaSerializer(tapas, many=True)
-        return Response(serializer.data)
+        
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+            'serializer': TapaSerializer(tapas, many=True).data
+        }
+        
+        return Response(content)
 
 
 class TapasListBar(APIView):
