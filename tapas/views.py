@@ -20,8 +20,19 @@ class TapasList(APIView):
     
     def get(self, request):
         tapas = Tapa.objects.all().order_by('-puntuacionMedia')
-        serializer = TapaSerializer(tapas, many=True)
-        return Response(serializer.data)
+        
+        # NOTA ACLARATORIA
+        # unicode(request.user) == request.user.username
+        # no se puede poner directamente request.user (objeto completo)
+        # si se puede poner request.user.* (siendo * cualquier campo de la clase User como el id) 
+        
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+            'serializer': TapaSerializer(tapas, many=True).data
+        }
+        
+        return Response(content)
 
 
 class TapasListBar(APIView):
