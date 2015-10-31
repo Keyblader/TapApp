@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from usuarios.serializers import UsuarioSerializer
+from usuarios.serializers import UserSerializer
 
 @api_view(['POST'])
 def anyadirUsuario(request):
@@ -11,7 +11,7 @@ def anyadirUsuario(request):
     """
     
     if request.method == 'POST':
-        serializer = UsuarioSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

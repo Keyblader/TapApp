@@ -7,6 +7,15 @@ from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerialize
 from tapas.models import Tapa, Bar
 from rest_framework.views import APIView
 from django.http import Http404
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 
 # TODO: Solo mostrar lo que esten a una determinada distancia 
 class TapasList(APIView):
@@ -127,6 +136,9 @@ class TapaDetail(APIView):
     """
     Muestra los detalles de una tapa.
     """
+    
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
     
     def get_object(self, id_tapa):
         try:

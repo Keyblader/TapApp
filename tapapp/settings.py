@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'tapas',
     'corsheaders',
-    #'usuarios',
+    'usuarios',
 )
 
 MIDDLEWARE_CLASSES = (
