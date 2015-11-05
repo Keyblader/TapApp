@@ -11,6 +11,8 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+import string
+import math 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -28,7 +30,51 @@ class TapasList(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self, request):
+        
         tapas = Tapa.objects.all().order_by('-puntuacionMedia')
+        data = request.GET
+        latitudActual=request.GET.get('latitud','')
+        longitudActual=request.GET.get('longitud','')
+        
+        rango=1000
+        
+        lista_tapas=[]
+        latitudActual=float(latitudActual)
+        longitudActual=float(longitudActual)
+        print latitudActual
+        print longitudActual
+        
+        for tapa in tapas:
+        
+            longitud=tapa.bar.longitud
+            latitud=tapa.bar.latitud
+                
+            longitud=float(longitud)
+            latitud=float(latitud)
+        
+            metrosLongitudPuntoA= longitud*(10000000/90)
+            metrosLatitudPuntoA=latitud*(40000000/360)
+        
+            metrosLongitudActual= longitudActual*(10000000/90)
+            metrosLatitudActual= latitudActual*(40000000/360)
+        
+            diferenciaLongitudMetros= metrosLongitudPuntoA-metrosLongitudActual
+            diferenciaLatitudMetros=metrosLatitudPuntoA-metrosLatitudActual
+        
+            diferenciaLongitudMetros=diferenciaLongitudMetros*diferenciaLongitudMetros
+            diferenciaLatitudMetros=diferenciaLatitudMetros*diferenciaLatitudMetros
+        
+            sumaMetros=diferenciaLatitudMetros+diferenciaLongitudMetros
+        
+        
+            distancia= math.sqrt(sumaMetros)
+        
+            print ("distancia: "+ str(distancia))
+            print rango
+        
+            if distancia<rango:
+                lista_tapas.append(tapa) 
+        
         
         # NOTA ACLARATORIA
         # unicode(request.user) == request.user.username
@@ -38,7 +84,7 @@ class TapasList(APIView):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
-            'serializer': TapaSerializer(tapas, many=True).data
+            'serializer': TapaSerializer(lista_tapas, many=True).data
         }
         
         return Response(content)
