@@ -2,13 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 import os
 
-# TODO: Revisar cuando el id es un numerico auto-generado.
+"""
+    Funciones del path de imagenes
+""" 
 
 def get_image_path_bar(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (str(instance.nombre), ext)
     return os.path.join('bares', str(instance.nombre), filename)
 
 def get_image_path_tapa(instance, filename):
-    return os.path.join('bares', str(instance.bar.nombre+instance.nombre), filename)
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % ("principal", ext)
+    return os.path.join('bares', str(instance.bar.nombre), str(instance.nombre), filename)
 
 def get_image_path_tapa_added(instance, filename):
     ext = filename.split('.')[-1]

@@ -1,25 +1,25 @@
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerializer, FotoSerializer, ValoracionSerializer
-from tapas.models import Tapa, Bar
+from tapas.models import Tapa, Bar, Comentario, Valoracion, Foto
 from rest_framework.views import APIView
 from django.http import Http404
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-import string
+from django.contrib.auth.models import User
 import math 
+from usuarios.serializers import UserSerializer
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-# TODO: Solo mostrar lo que esten a una determinada distancia 
 class TapasList(APIView):
     
     """
@@ -32,17 +32,15 @@ class TapasList(APIView):
     def get(self, request):
         
         tapas = Tapa.objects.all().order_by('-puntuacionMedia')
-        data = request.GET
+
         latitudActual=request.GET.get('latitud','')
         longitudActual=request.GET.get('longitud','')
         
-        rango=1000
+        rango=100000000000
         
         lista_tapas=[]
         latitudActual=float(latitudActual)
         longitudActual=float(longitudActual)
-        print latitudActual
-        print longitudActual
         
         for tapa in tapas:
         
@@ -69,8 +67,6 @@ class TapasList(APIView):
         
             distancia= math.sqrt(sumaMetros)
         
-            print ("distancia: "+ str(distancia))
-            print rango
         
             if distancia<rango:
                 lista_tapas.append(tapa) 
@@ -96,13 +92,29 @@ class TapasListBar(APIView):
     Muestra un listado de las tapas de un determinado bar.
     """
     
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, id_bar):
         tapas = Tapa.objects.filter(bar=id_bar)
-        serializer = TapaSerializer(tapas, many=True)
-        return Response(serializer.data)
+        bar = Bar.objects.get(pk=id_bar)
+        
+        sTapas = TapaSerializer(tapas, many=True)
+        sBar = BarSerializer(bar)
+        
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+            'tapas': sTapas.data,
+            'bar': sBar.data       
+        }
+        
+        return Response(content)
 
 
 @api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirBar(request):
     
     """
@@ -118,6 +130,8 @@ def anyadirBar(request):
 
 
 @api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirTapa(request):
     
     """
@@ -133,6 +147,8 @@ def anyadirTapa(request):
     
     
 @api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirComentario(request):
     
     """
@@ -147,7 +163,9 @@ def anyadirComentario(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
    
    
-@api_view(['POST'])  
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirFoto(request):
     
     """
@@ -163,6 +181,8 @@ def anyadirFoto(request):
  
 
 @api_view(['POST']) 
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirValoracion(request):
     
     """
@@ -193,9 +213,24 @@ class TapaDetail(APIView):
             raise Http404
 
     def get(self, request, id_tapa):
-        tapas = self.get_object(id_tapa)
-        serializer = TapaSerializer(tapas)
-        return Response(serializer.data)
+        
+        t = Tapa.objects.get(pk=id_tapa)
+        b = Bar.objects.get(pk=t.bar.pk)
+        comentarios = Comentario.objects.filter(tapa=t)
+        fotos = Foto.objects.filter(tapa=t.pk)
+        #usuarioRegistro = User.objects.get(pk=t.ususarioRegistro)
+        
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+            'tapa': TapaSerializer(t).data,
+            'bar': BarSerializer(b).data,
+            #'usuarioRegistro': UserSerializer(usuarioRegistro).data,
+            'fotos': FotoSerializer(fotos, many=True).data,
+            'comentarios': ComentarioSerializer(comentarios, many=True).data
+        }
+        
+        return Response(content)
     
               
 class BarDetail(APIView):
@@ -204,6 +239,9 @@ class BarDetail(APIView):
     Devuelve una lista de los bares.
     """
     
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
     def get_object(self, id_bar):
         try:
             return Bar.objects.get(pk=id_bar)
@@ -211,6 +249,15 @@ class BarDetail(APIView):
             raise Http404
 
     def get(self, request, id_bar):
-        bares = self.get_object(id_bar)
-        serializer = BarSerializer(bares)
-        return Response(serializer.data)              
+        
+        b = self.get_object(id_bar)  
+        tapas = Tapa.objects.filter(bar=id_bar).order_by('-puntuacionMedia')
+        
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+            'tapas': TapaSerializer(tapas, many=True).data,
+            'bar': BarSerializer(b).data,
+        }
+        
+        return Response(content)              
