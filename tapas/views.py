@@ -113,8 +113,8 @@ class TapasListBar(APIView):
 
 
 @api_view(['POST'])
-@authentication_classes((TokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+#@authentication_classes((TokenAuthentication,))
+#@permission_classes((IsAuthenticated,))
 def anyadirBar(request):
     
     """
@@ -180,19 +180,55 @@ def anyadirFoto(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
 
+def valoracionTapa(request, id_tapa):
+    t = Tapa.objects.get(pk=id_tapa)
+    valoraciones = Valoracion.objects.filter(tapa=id_tapa)
+
+    total=0.0
+    if len(valoraciones) > 0:
+        for valoracion in valoraciones: 
+            total = total + valoracion.puntuacion
+        round(total,1)
+        t.puntuacionMedia = total/len(valoraciones)
+    else:
+        t.puntuacionMedia = 0
+    t.save()
+
+
 @api_view(['POST']) 
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated,))
-def anyadirValoracion(request):
+def anyadirValoracion(request, id_tapa):
     
     """
     Vista que nos permite crear un nuevo bar.
     """
     
     if request.method == 'POST':
+        t = Tapa.objects.get(pk=id_tapa)
+        us = User.objects.get(pk=request.user.pk)
         serializer = ValoracionSerializer(data=request.data)
+        punt = serializer.puntuacion
+
+        try:
+            valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
+            yaComentado = True
+        except User.DoesNotExist:
+            yaComentado = False
+        except Valoracion.DoesNotExist:
+            yaComentado = False
+             
+        if yaComentado:   
+            valoracion.delete()
+
+        val = Valoracion()
+        val.puntuacion=punt
+        val.usuario=us
+        val.tapa=t
+        val.save()
+        valoracionTapa(request, id_tapa)
+
         if serializer.is_valid():
-            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -221,7 +257,7 @@ class TapaDetail(APIView):
         #usuarioRegistro = User.objects.get(pk=t.ususarioRegistro)
         
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'user': request.user.id,  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
             'tapa': TapaSerializer(t).data,
             'bar': BarSerializer(b).data,
@@ -250,7 +286,7 @@ class BarDetail(APIView):
 
     def get(self, request, id_bar):
         
-        b = self.get_object(id_bar)  
+        b = Bar.objects.get(pk=id_bar) 
         tapas = Tapa.objects.filter(bar=id_bar).order_by('-puntuacionMedia')
         
         content = {
