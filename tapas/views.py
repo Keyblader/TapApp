@@ -198,37 +198,36 @@ def valoracionTapa(request, id_tapa):
 @api_view(['POST']) 
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated,))
-def anyadirValoracion(request, id_tapa):
+def anyadirValoracion(request):
     
     """
     Vista que nos permite crear un nuevo bar.
     """
     
     if request.method == 'POST':
-        t = Tapa.objects.get(pk=id_tapa)
-        us = User.objects.get(pk=request.user.pk)
         serializer = ValoracionSerializer(data=request.data)
-        punt = serializer.puntuacion
-
-        try:
-            valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
-            yaComentado = True
-        except User.DoesNotExist:
-            yaComentado = False
-        except Valoracion.DoesNotExist:
-            yaComentado = False
-             
-        if yaComentado:   
-            valoracion.delete()
-
-        val = Valoracion()
-        val.puntuacion=punt
-        val.usuario=us
-        val.tapa=t
-        val.save()
-        valoracionTapa(request, id_tapa)
-
         if serializer.is_valid():
+                                    
+            us = User.objects.get(pk=request.user.id)
+            t = Tapa.objects.get(pk=serializer['tapa'].value)
+            
+            punt = serializer['puntuacion'].value
+                        
+            try:
+                valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
+                yaComentado = True
+            except User.DoesNotExist:
+                yaComentado = False
+            except Valoracion.DoesNotExist:
+                yaComentado = False
+              
+            if yaComentado:
+                valoracion.delete() 
+                 
+            serializer.save()
+            valoracionTapa(request, serializer['tapa'].value)
+
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
