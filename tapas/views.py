@@ -139,7 +139,7 @@ def anyadirTapa(request):
     """
     
     if request.method == 'POST':
-        serializer = TapaSerializer(data=request.data)
+        serializer = TapaSerializer(data=request.data, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
