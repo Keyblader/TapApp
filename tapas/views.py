@@ -35,8 +35,11 @@ class TapasList(APIView):
 
         latitudActual=request.GET.get('latitud','')
         longitudActual=request.GET.get('longitud','')
+        rango=request.GET.get('rango','')
+        rango=float(rango)
+        print rango
         
-        rango=100000000000
+
         
         lista_tapas=[]
         latitudActual=float(latitudActual)
@@ -66,10 +69,14 @@ class TapasList(APIView):
         
         
             distancia= math.sqrt(sumaMetros)
+            print distancia
         
         
             if distancia<rango:
+                print "entra"
                 lista_tapas.append(tapa) 
+                
+            
         
         
         # NOTA ACLARATORIA
