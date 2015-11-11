@@ -260,16 +260,21 @@ class TapaDetail(APIView):
         b = Bar.objects.get(pk=t.bar.pk)
         comentarios = Comentario.objects.filter(tapa=t)
         fotos = Foto.objects.filter(tapa=t.pk)
-        #usuarioRegistro = User.objects.get(pk=t.ususarioRegistro)
+        
+        try:
+            t.favoritos.get(pk=request.user.pk)
+            favorito = "true"
+        except User.DoesNotExist:
+            favorito = "false"      
         
         content = {
             'user': request.user.id,  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
             'tapa': TapaSerializer(t).data,
             'bar': BarSerializer(b).data,
-            #'usuarioRegistro': UserSerializer(usuarioRegistro).data,
             'fotos': FotoSerializer(fotos, many=True).data,
-            'comentarios': ComentarioSerializer(comentarios, many=True).data
+            'comentarios': ComentarioSerializer(comentarios, many=True).data,
+            'favorito': favorito
         }
         
         return Response(content)
@@ -302,4 +307,22 @@ class BarDetail(APIView):
             'bar': BarSerializer(b).data,
         }
         
-        return Response(content)              
+        return Response(content)        
+    
+    
+@api_view(['POST']) 
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))    
+def anyadirFavorito(request, id_tapa):
+    t = Tapa.objects.get(pk=id_tapa)   
+    try:
+        t.favoritos.get(pk=request.user.pk)
+        favorito = True
+    except User.DoesNotExist:
+        favorito = False      
+    if favorito:
+        t.favoritos.remove(request.user.pk)
+    else: 
+        t.favoritos.add(request.user.pk)    
+    t.save()
+    return Response(status=status.HTTP_201_CREATED)      

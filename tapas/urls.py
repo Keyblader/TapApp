@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^anyadirComentario/$', views.anyadirComentario),
     url(r'^anyadirValoracion/$', views.anyadirValoracion),
     url(r'^anyadirFoto/$', views.anyadirFoto),
+    url(r'^anyadirFavorito/(?P<id_tapa>\d+)/$', views.anyadirFavorito),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
