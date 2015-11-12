@@ -119,7 +119,7 @@ class TapasListBar(APIView):
         return Response(content)
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 #@authentication_classes((TokenAuthentication,))
 #@permission_classes((IsAuthenticated,))
 def anyadirBar(request):
@@ -128,7 +128,7 @@ def anyadirBar(request):
     Vista que nos permite crear un nuevo bar.
     """
     
-    if request.method == 'POST':
+    if request.method == 'PUT':
         serializer = BarSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
