@@ -326,3 +326,18 @@ def anyadirFavorito(request, id_tapa):
         t.favoritos.add(request.user.pk)    
     t.save()
     return Response(status=status.HTTP_201_CREATED)      
+
+
+class BaresList(APIView):
+    
+    """
+    Muestra un listado de los bares ordenado por su nombre.
+    """
+ 
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request):
+        bares = Bar.objects.all().order_by('nombre')
+        serializer = BarSerializer(bares, many=True)
+        return Response(serializer.data)

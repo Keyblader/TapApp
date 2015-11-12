@@ -5,6 +5,7 @@ from tapas import views
 
 urlpatterns = [
     url(r'^listaTapas/$', views.TapasList.as_view()),
+    url(r'^listaBares/$', views.BaresList.as_view()),
     url(r'^listaTapasBar/(?P<id_bar>\d+)/$', views.TapasListBar.as_view()),
     url(r'^detalleBar/(?P<id_bar>\d+)/$', views.BarDetail.as_view()),
     url(r'^detalleTapa/(?P<id_tapa>\d+)/$', views.TapaDetail.as_view()),

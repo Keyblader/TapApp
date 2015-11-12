@@ -23,7 +23,7 @@ def get_image_path_tapa_added(instance, filename):
     else:
         num = instance.id 
     filename = "%s.%s" % (str(num), ext)
-    return os.path.join('tapas', str(instance.tapa.id) , filename)
+    return os.path.join('bares', str(instance.tapa.bar.nombre), str(instance.tapa.nombre), filename)
 
 class Bar(models.Model):
         
@@ -34,7 +34,7 @@ class Bar(models.Model):
     class Meta:
         verbose_name_plural = 'Bares'  
         
-    nombre = models.CharField(max_length = 100)
+    nombre = models.CharField(max_length = 100, unique=True)
     descripcion = models.TextField(null = True, blank = True)
     longitud = models.CharField(max_length = 50)
     latitud = models.CharField(max_length = 50)
