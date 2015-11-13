@@ -13,7 +13,6 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 import math 
-from usuarios.serializers import UserSerializer
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -119,16 +118,16 @@ class TapasListBar(APIView):
         return Response(content)
 
 
-@api_view(['PUT'])
-#@authentication_classes((TokenAuthentication,))
-#@permission_classes((IsAuthenticated,))
+@api_view(['POST'])
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def anyadirBar(request):
     
     """
     Vista que nos permite crear un nuevo bar.
     """
     
-    if request.method == 'PUT':
+    if request.method == 'POST':
         serializer = BarSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -218,7 +217,7 @@ def anyadirValoracion(request):
             us = User.objects.get(pk=request.user.id)
             t = Tapa.objects.get(pk=serializer['tapa'].value)
             
-            punt = serializer['puntuacion'].value
+            #punt = serializer['puntuacion'].value
                         
             try:
                 valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
