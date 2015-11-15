@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'tapas',
-#    'corsheaders',
+    'corsheaders',
     'usuarios',
 )
 
@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-#    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
 
 ROOT_URLCONF = 'tapapp.urls'
