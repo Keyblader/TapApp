@@ -213,12 +213,10 @@ def anyadirValoracion(request):
     if request.method == 'POST':
         serializer = ValoracionSerializer(data=request.data)
         if serializer.is_valid():
-                                    
+            tapaID = serializer.validated_data['tapa'].id
             us = User.objects.get(pk=request.user.id)
-            t = Tapa.objects.get(pk=serializer['tapa'].value)
-            
-            #punt = serializer['puntuacion'].value
-                        
+            t = Tapa.objects.get(pk=tapaID)
+                                    
             try:
                 valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
                 yaComentado = True
@@ -231,7 +229,7 @@ def anyadirValoracion(request):
                 valoracion.delete() 
                  
             serializer.save()
-            valoracionTapa(request, serializer['tapa'].value)
+            valoracionTapa(request, tapaID)
 
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -266,6 +264,14 @@ class TapaDetail(APIView):
         except User.DoesNotExist:
             favorito = "false"      
         
+        try:
+            valoracion = Valoracion.objects.filter(tapa=t).get(usuario=request.user)
+            puntuacion = valoracion.puntuacion
+        except User.DoesNotExist:
+            puntuacion = 1
+        except Valoracion.DoesNotExist:
+            puntuacion = 1
+        
         content = {
             'user': request.user.id,  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
@@ -273,7 +279,8 @@ class TapaDetail(APIView):
             'bar': BarSerializer(b).data,
             'fotos': FotoSerializer(fotos, many=True).data,
             'comentarios': ComentarioSerializer(comentarios, many=True).data,
-            'favorito': favorito
+            'favorito': favorito,
+            'puntuacion': puntuacion
         }
         
         return Response(content)
