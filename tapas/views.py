@@ -11,7 +11,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
+from usuarios.models import Usuario
 import math 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -214,13 +214,13 @@ def anyadirValoracion(request):
         serializer = ValoracionSerializer(data=request.data)
         if serializer.is_valid():
             tapaID = serializer.validated_data['tapa'].id
-            us = User.objects.get(pk=request.user.id)
+            us = Usuario.objects.get(pk=request.user.id)
             t = Tapa.objects.get(pk=tapaID)
                                     
             try:
                 valoracion = Valoracion.objects.filter(tapa=t).get(usuario=us)
                 yaComentado = True
-            except User.DoesNotExist:
+            except Usuario.DoesNotExist:
                 yaComentado = False
             except Valoracion.DoesNotExist:
                 yaComentado = False
@@ -261,13 +261,13 @@ class TapaDetail(APIView):
         try:
             t.favoritos.get(pk=request.user.pk)
             favorito = "true"
-        except User.DoesNotExist:
+        except Usuario.DoesNotExist:
             favorito = "false"      
         
         try:
             valoracion = Valoracion.objects.filter(tapa=t).get(usuario=request.user)
             puntuacion = valoracion.puntuacion
-        except User.DoesNotExist:
+        except Usuario.DoesNotExist:
             puntuacion = 1
         except Valoracion.DoesNotExist:
             puntuacion = 1
@@ -324,7 +324,7 @@ def anyadirFavorito(request, id_tapa):
     try:
         t.favoritos.get(pk=request.user.pk)
         favorito = True
-    except User.DoesNotExist:
+    except Usuario.DoesNotExist:
         favorito = False      
     if favorito:
         t.favoritos.remove(request.user.pk)

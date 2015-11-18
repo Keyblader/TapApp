@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from usuarios.models import Usuario
 import os
 
 """
@@ -40,7 +40,7 @@ class Bar(models.Model):
     latitud = models.CharField(max_length = 50)
     imagen = models.ImageField(upload_to=get_image_path_bar, default='bar.jpg')
     fechaSubida = models.DateTimeField(auto_now=True)  
-    usuarioRegistro = models.ForeignKey(User)
+    usuarioRegistro = models.ForeignKey(Usuario)
     
     def __unicode__(self):
         return self.nombre
@@ -61,8 +61,8 @@ class Tapa(models.Model):
     puntuacionMedia = models.FloatField(default=0)
     fechaSubida = models.DateTimeField(auto_now=True)    
     bar = models.ForeignKey(Bar)
-    usuarioRegistro = models.ForeignKey(User, related_name = 'registrador')
-    favoritos = models.ManyToManyField(User, related_name = 'favorito', blank = True)
+    usuarioRegistro = models.ForeignKey(Usuario, related_name = 'registrador')
+    favoritos = models.ManyToManyField(Usuario, related_name = 'favorito', blank = True)
     
     def __unicode__(self):
         return self.nombre
@@ -77,7 +77,7 @@ class Comentario(models.Model):
     descripcion = models.TextField()    
     fechaSubida = models.DateTimeField(auto_now=True)
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(User)
+    usuario = models.ForeignKey(Usuario)
     
     
 class Valoracion(models.Model):
@@ -91,7 +91,7 @@ class Valoracion(models.Model):
         
     puntuacion = models.IntegerField()
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(User)
+    usuario = models.ForeignKey(Usuario)
             
                 
 class Foto(models.Model):
@@ -103,4 +103,4 @@ class Foto(models.Model):
     imagen = models.ImageField(upload_to=get_image_path_tapa_added)
     fechaSubida = models.DateTimeField(auto_now=True)
     tapa = models.ForeignKey(Tapa)
-    usuario = models.ForeignKey(User)  
+    usuario = models.ForeignKey(Usuario)  

@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from usuarios.serializers import UserSerializer
+from usuarios.models import Usuario
 
 @api_view(['POST'])
 def anyadirUsuario(request):
@@ -26,8 +27,13 @@ def dameUsuario(request):
     Vista que nos devuelve el id del usuario.
     """
     
+    us = Usuario.objects.get(pk=request.user.id)
+    serializer = UserSerializer(us)
+    
     content = {
             'user': request.user.id,  # `django.contrib.auth.User` instance.
+            'nombre': request.user.username,
+            'serializer': serializer.data
     }
     
     return Response(content)
