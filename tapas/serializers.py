@@ -4,7 +4,7 @@ from tapas.models import Bar, Comentario, Foto, Tapa, Valoracion
 class BarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bar
-        fields = ('id', 'nombre', 'descripcion', 'longitud', 'latitud', 'imagen', 'fechaSubida', 'usuarioRegistro')
+        fields = ('id', 'nombre', 'descripcion', 'longitud', 'latitud', 'imagen', 'fechaSubida', 'usuarioRegistro', 'thumbnail')
         
 class TapaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +14,7 @@ class TapaSerializer(serializers.ModelSerializer):
 class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
-        fields = ('id', 'descripcion', 'fechaSubida', 'tapa', 'usuario')
+        fields = ('id', 'descripcion', 'fechaSubida', 'tapa', 'usuario', 'nombre')
         
 class ValoracionSerializer(serializers.ModelSerializer):
     class Meta:
