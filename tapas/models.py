@@ -1,7 +1,6 @@
 from django.db import models
 from usuarios.models import Usuario
 import os
-from django_resized import ResizedImageField
 
 """
     Funciones del path de imagenes
@@ -39,7 +38,7 @@ class Bar(models.Model):
     descripcion = models.TextField(null = True, blank = True)
     longitud = models.CharField(max_length = 50)
     latitud = models.CharField(max_length = 50)
-    imagen = ResizedImageField(upload_to=get_image_path_bar, default='bar.jpg', size=[256, 192], quality=70)
+    imagen = models.ImageField(upload_to=get_image_path_bar, default='bar.jpg')
     fechaSubida = models.DateTimeField(auto_now=True)  
     usuarioRegistro = models.ForeignKey(Usuario)
     
