@@ -14,8 +14,8 @@ class TapaSerializer(serializers.ModelSerializer):
 class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
-        fields = ('id', 'descripcion', 'fechaSubida', 'tapa', 'usuario')
-        
+        fields = ('id', 'descripcion', 'fechaSubida', 'tapa', 'usuario', 'nombre')  
+              
 class ValoracionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Valoracion

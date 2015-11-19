@@ -78,6 +78,7 @@ class Comentario(models.Model):
     fechaSubida = models.DateTimeField(auto_now=True)
     tapa = models.ForeignKey(Tapa)
     usuario = models.ForeignKey(Usuario)
+    nombre = models.CharField(max_length = 100, null=True, blank=True)
     
     
 class Valoracion(models.Model):
