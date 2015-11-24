@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from usuarios.models import Usuario
 import math 
+import json
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -310,7 +311,7 @@ class BarDetail(APIView):
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
             'tapas': TapaSerializer(tapas, many=True).data,
-            'bar': BarSerializer(b).data,
+            'bar': BarSerializer(b).data
         }
         
         return Response(content)        
@@ -347,3 +348,40 @@ class BaresList(APIView):
         bares = Bar.objects.all().order_by('nombre')
         serializer = BarSerializer(bares, many=True)
         return Response(serializer.data)
+       
+        
+@api_view(['GET']) 
+#@authentication_classes((TokenAuthentication,))
+#@permission_classes((IsAuthenticated,))    
+def dameToken(request, id_tapa):
+    
+    print "hola"
+    
+    
+    t = Tapa.objects.get(pk=id_tapa)
+    comentarios = Comentario.objects.filter(tapa=t)  
+    usuarios = []  
+    tokens = []  
+      
+      
+    for c in comentarios:
+        u = Usuario.objects.get(pk=c.usuario)
+        usuarios.append(u)
+        
+    usuarios = set(usuarios)
+    
+    for u in usuarios:
+        t = Token.objects.get(user=u)
+        tokens.append(t.pk)
+    
+    print tokens
+        
+    #jToken = json.dumps([dict(number = t.pk) for t in tokens])
+    jToken = json.dumps(tokens)
+    print jToken
+
+    content = {
+        'tokens': jToken,
+    }
+
+    return Response(content)
