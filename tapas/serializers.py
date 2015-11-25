@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from tapas.models import Bar, Comentario, Foto, Tapa, Valoracion
+from rest_framework.authtoken.models import Token
 
 class BarSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +25,9 @@ class ValoracionSerializer(serializers.ModelSerializer):
 class FotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Foto
-        fields = ('id', 'imagen', 'fechaSubida', 'tapa', 'usuario')                  
+        fields = ('id', 'imagen', 'fechaSubida', 'tapa', 'usuario')
+        
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Token
+        fields = ('key', 'user')             

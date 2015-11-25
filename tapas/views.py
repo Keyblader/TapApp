@@ -3,7 +3,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerializer, FotoSerializer, ValoracionSerializer
+from tapas.serializers import TapaSerializer, BarSerializer, ComentarioSerializer, FotoSerializer, ValoracionSerializer, TokenSerializer
 from tapas.models import Tapa, Bar, Comentario, Valoracion, Foto
 from rest_framework.views import APIView
 from django.http import Http404
@@ -13,7 +13,6 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from usuarios.models import Usuario
 import math 
-import json
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -351,11 +350,9 @@ class BaresList(APIView):
        
         
 @api_view(['GET']) 
-#@authentication_classes((TokenAuthentication,))
-#@permission_classes((IsAuthenticated,))    
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))    
 def dameToken(request, id_tapa):
-    
-    print "hola"
     
     
     t = Tapa.objects.get(pk=id_tapa)
@@ -372,16 +369,15 @@ def dameToken(request, id_tapa):
     
     for u in usuarios:
         t = Token.objects.get(user=u)
-        tokens.append(t.pk)
+        tokens.append(t)
     
-    print tokens
-        
+    #print tokens   
     #jToken = json.dumps([dict(number = t.pk) for t in tokens])
-    jToken = json.dumps(tokens)
-    print jToken
+    #jToken = json.dumps(tokens)
+    #print jToken
 
     content = {
-        'tokens': jToken,
+        'tokens': TokenSerializer(tokens, many=True).data,
     }
 
     return Response(content)
