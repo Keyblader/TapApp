@@ -2,7 +2,7 @@ from rest_framework import serializers
 from models import Usuario
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Usuario
         fields = ('username', 'password', 'email', 'is_active', 'date_joined', 'imagen')
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
- 
+
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             if attr == 'password':
@@ -27,10 +27,16 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class UserEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Usuario
+        fields = ('imagen', 'email')
+
 #===============================================================================
 # from rest_framework import serializers
 # from usuarios.models import Usuario
-# 
+#
 # class UsuarioSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Usuario
@@ -38,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
 #         extra_kwargs = {
 #                 'password': {'write_only': True}
 #         }
-#         
+#
 #     def create(self, validated_data):
 #         password = validated_data.pop('password', None)
 #         instance = self.Meta.model(**validated_data)
@@ -46,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
 #             instance.set_password(password)
 #         instance.save()
 #         return instance
-# 
+#
 #     def update(self, instance, validated_data):
 #         for attr, value in validated_data.items():
 #             if attr == 'password':
