@@ -381,3 +381,14 @@ def dameToken(request, id_tapa):
     }
 
     return Response(content)
+
+
+@api_view(['GET']) 
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated,))    
+def dameBar(request, id_bar):
+    b = Bar.objects.get(pk=id_bar)
+    content = {
+            'nombreBar': unicode(b)
+    }
+    return Response(content)

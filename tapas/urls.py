@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^anyadirFoto/$', views.anyadirFoto),
     url(r'^anyadirFavorito/(?P<id_tapa>\d+)/$', views.anyadirFavorito),
     url(r'^dameToken/(?P<id_tapa>\d+)/$', views.dameToken),
+    url(r'^dameBar/(?P<id_bar>\d+)/$', views.dameBar),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

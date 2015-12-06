@@ -63,6 +63,7 @@ class Tapa(models.Model):
     bar = models.ForeignKey(Bar)
     usuarioRegistro = models.ForeignKey(Usuario, related_name = 'registrador')
     favoritos = models.ManyToManyField(Usuario, related_name = 'favorito', blank = True)
+    nombreBar = models.CharField(max_length = 100, null=True, blank=True)
     
     def __unicode__(self):
         return self.nombre

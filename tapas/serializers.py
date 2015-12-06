@@ -10,7 +10,7 @@ class BarSerializer(serializers.ModelSerializer):
 class TapaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tapa
-        fields = ('id', 'nombre', 'imagen', 'descripcion', 'puntuacionMedia', 'fechaSubida', 'bar', 'usuarioRegistro', 'favoritos')
+        fields = ('id', 'nombre', 'imagen', 'descripcion', 'puntuacionMedia', 'fechaSubida', 'bar', 'usuarioRegistro', 'favoritos', 'nombreBar')
         
 class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
