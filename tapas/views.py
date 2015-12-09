@@ -268,9 +268,9 @@ class TapaDetail(APIView):
             valoracion = Valoracion.objects.filter(tapa=t).get(usuario=request.user)
             puntuacion = valoracion.puntuacion
         except Usuario.DoesNotExist:
-            puntuacion = 1
+            puntuacion = 0
         except Valoracion.DoesNotExist:
-            puntuacion = 1
+            puntuacion = 0
         
         content = {
             'user': request.user.id,  # `django.contrib.auth.User` instance.
